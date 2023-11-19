@@ -21,12 +21,12 @@ def imshow(img, new_fig=True, title=None, color_img=False, blocking=True, colorb
 
 def gray_scale(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    imshow(gray)
+    imshow(gray,new_fig=True, title="Imagen con escalado de grises")
     return gray
 
 def adaptive_threshold(img):
     tresh = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 9, -10)
-    imshow(tresh, new_fig=True, title="Tresh")
+    imshow(tresh, new_fig=True, title="Imagen con umbralado adaptativo")
     return tresh
 
 def connected_components(img_tresh, min_area, max_area, min_aspect_ratio, max_aspect_ratio):
@@ -62,7 +62,7 @@ def remove_noise_and_smooth(filtered_area, distance_threshold):
     se = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1))
     clean_area_open = cv2.morphologyEx(clean_area, cv2.MORPH_OPEN, se)
     final_image = cv2.morphologyEx(clean_area_open, cv2.MORPH_CLOSE, se)
-    imshow(final_image)
+    imshow(final_image , new_fig=True, title="Imagen con filtrado final")
 
     return final_image
 
@@ -72,21 +72,22 @@ def extract_characters(final_image):
 
     for label in range(1, num_labels):  
         component_mask = (labels == label).astype(np.uint8) * 255
-        imshow(component_mask)
+        imshow(component_mask , new_fig=True, title="Componentes")
 
 # Uso
-img_path = os.path.join("img01.png")
+img_path = os.path.join("Patentes", "img01.png")
 
 if os.path.isfile(img_path):
     img_original = cv2.imread(img_path)
     img_gray = gray_scale(img_original)
     img_thresh = adaptive_threshold(img_gray)
 
-
+    # Ajusta estos parámetros según tus necesidades
     min_area, max_area = 25, 90
     min_aspect_ratio, max_aspect_ratio = 0.4, 0.7
     filtered_area = connected_components(img_thresh, min_area, max_area, min_aspect_ratio, max_aspect_ratio)
 
+    # Ajusta este parámetro según tus necesidades
     distance_threshold = 15
     img_final = remove_noise_and_smooth(filtered_area, distance_threshold)
 
